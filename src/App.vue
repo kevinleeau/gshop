@@ -1,7 +1,8 @@
 <template>
  <div id="app">
    <router-view/>
-   <FooterGuide/>
+   <!-- 只有在router.js里配置了meta属性才渲染，否则不渲染 -->
+   <FooterGuide v-show="$route.meta.showFooter"/>
  </div>
 </template>
 

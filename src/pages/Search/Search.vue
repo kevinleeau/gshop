@@ -1,11 +1,7 @@
 <template>
  <div>
       <section class="search">
-        <header class="header">
-          <a class="header_title">
-            <span class="header_title_text">Search</span>
-          </a>
-        </header>
+        <HeaderTop title="Search"/>
         <form class="search_form" action="#">
           <input type="search" name="search" placeholder="Please input store name or food name" class="search_input">
           <input type="submit" name="submit" class="search_submit">
@@ -15,10 +11,12 @@
 </template>
 
 <script>
+import HeaderTop from '@/components/HeaderTop/HeaderTop.vue'
 export default {
-
+  components: {
+    HeaderTop
+  }
 }
-
 </script>
 <style lang="stylus" rel="stylesheet/stylus">
 @import "../../common/stylus/mixins.styl"
