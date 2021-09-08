@@ -1,7 +1,7 @@
 <template>
  <section class="msite">
         <!--首页头部-->
-        <header-top title="aaa">
+        <header-top :title="address.geohash">
           <span class="header_search" slot="left">
             <i class="iconfont icon-loupe"></i>
           </span>
@@ -11,112 +11,22 @@
           </header-top>
         <!--首页导航-->
         <nav class="msite_nav">
-          <div class="swiper-container">
+          <!-- v-if当categories有数据时渲染，v-else如果网络速度慢正在等待数据则渲染img -->
+          <div class="swiper-container" v-if="categories.length > 0">
             <div class="swiper-wrapper">
-              <div class="swiper-slide">
-                <a href="javascript:" class="link_to_food">
+              <div class="swiper-slide" v-for="(categories, index) in categoriesArr" :key="index">
+                <a href="javascript:" class="link_to_food" v-for="(category, index) in categories" :key="index">
                   <div class="food_container">
-                    <img src="./images/nav/1.jpg">
+                    <img :src="imgBaseUrl + category.image_url">
                   </div>
-                  <span>Sweet</span>
-                </a>
-                <a href="javascript:" class="link_to_food">
-                  <div class="food_container">
-                    <img src="./images/nav/2.jpg">
-                  </div>
-                  <span>convinence store</span>
-                </a>
-                <a href="javascript:" class="link_to_food">
-                  <div class="food_container">
-                    <img src="./images/nav/3.jpg">
-                  </div>
-                  <span>tasty food</span>
-                </a>
-                <a href="javascript:" class="link_to_food">
-                  <div class="food_container">
-                    <img src="./images/nav/4.jpg">
-                  </div>
-                  <span>fast food</span>
-                </a>
-                <a href="javascript:" class="link_to_food">
-                  <div class="food_container">
-                    <img src="./images/nav/5.jpg">
-                  </div>
-                  <span>promotion</span>
-                </a>
-                <a href="javascript:" class="link_to_food">
-                  <div class="food_container">
-                    <img src="./images/nav/6.jpg">
-                  </div>
-                  <span>on time</span>
-                </a>
-                <a href="javascript:" class="link_to_food">
-                  <div class="food_container">
-                    <img src="./images/nav/7.jpg">
-                  </div>
-                  <span>breakfast</span>
-                </a>
-                <a href="javascript:" class="link_to_food">
-                  <div class="food_container">
-                    <img src="./images/nav/8.jpg">
-                  </div>
-                  <span>recommendation</span>
-                </a>
-              </div>
-              <div class="swiper-slide">
-                <a href="javascript:" class="link_to_food">
-                  <div class="food_container">
-                    <img src="./images/nav/9.jpg">
-                  </div>
-                  <span>drink</span>
-                </a>
-                <a href="javascript:" class="link_to_food">
-                  <div class="food_container">
-                    <img src="./images/nav/10.jpg">
-                  </div>
-                  <span>convinence store</span>
-                </a>
-                <a href="javascript:" class="link_to_food">
-                  <div class="food_container">
-                    <img src="./images/nav/11.jpg">
-                  </div>
-                  <span>tasty food</span>
-                </a>
-                <a href="javascript:" class="link_to_food">
-                  <div class="food_container">
-                    <img src="./images/nav/12.jpg">
-                  </div>
-                  <span>fast food</span>
-                </a>
-                <a href="javascript:" class="link_to_food">
-                  <div class="food_container">
-                    <img src="./images/nav/13.jpg">
-                  </div>
-                  <span>promotion</span>
-                </a>
-                <a href="javascript:" class="link_to_food">
-                  <div class="food_container">
-                    <img src="./images/nav/14.jpg">
-                  </div>
-                  <span>on time</span>
-                </a>
-                <a href="javascript:" class="link_to_food">
-                  <div class="food_container">
-                    <img src="./images/nav/1.jpg">
-                  </div>
-                  <span>breakfast</span>
-                </a>
-                <a href="javascript:" class="link_to_food">
-                  <div class="food_container">
-                    <img src="./images/nav/2.jpg">
-                  </div>
-                  <span>recommendation</span>
+                  <span>{{category.title}}</span>
                 </a>
               </div>
             </div>
             <!-- Add Pagination -->
             <div class="swiper-pagination"></div>
           </div>
+          <img src="./image/msite_back.svg" alt="back" v-else>
         </nav>
         <!--首页附近商家-->
         <div class="msite_shop_list">
@@ -140,20 +50,57 @@ import Swiper from 'swiper'
 import 'swiper/css/swiper.min.css'
 import HeaderTop from '@/components/HeaderTop/HeaderTop.vue'
 import ShopList from '@/components/ShopList/ShopList.vue'
+import { mapState } from 'vuex'
 export default {
+  data () {
+    return {
+      imgBaseUrl: 'https://fuss10.elemecdn.com'
+    }
+  },
   components: {
     HeaderTop,
     ShopList
   },
+  computed: {
+    ...mapState(['address', 'categories']),
+    categoriesArr () {
+      const { categories } = this
+      const arr = []
+      let minArr = []
+      categories.forEach(c => {
+        // if minarr is full, then re-define a new empty minarr
+        if (minArr.length === 8) {
+          minArr = []
+        }
+        // if minArr empty, them push it to arr
+        if (minArr.length === 0) {
+          arr.push(minArr)
+        }
+        // save current item to minArr
+        minArr.push(c)
+      })
+      return arr
+    }
+  },
+  // watch component and perform specified tasks when the value of the component changes
+  watch: {
+    // watch 当页面更新立即调用swiper，$nextTick(callback函数)
+    categories (value) {
+      this.$nextTick(() => {
+        /* eslint-disable no-new */
+        new Swiper('.swiper-container', {
+          loop: true,
+          pagination: {
+            el: '.swiper-pagination'
+          }
+        })
+      })
+    }
+  },
   //   mounted在页面渲染完成后才加载第三方插件
   mounted () {
-    /* eslint-disable no-new */
-    new Swiper('.swiper-container', {
-      loop: true,
-      pagination: {
-        el: '.swiper-pagination'
-      }
-    })
+    this.$store.dispatch('getFoodCategories')
+    this.$store.dispatch('getShops')
   }
 }
 </script>
