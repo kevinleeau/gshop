@@ -1,7 +1,9 @@
 <template>
  <div class="shop_container">
-            <ul class="shop_list">
-              <li class="shop_li border-1px" v-for="(item, index) in shops" :key="index">
+             <!-- 条件渲染，当数据处于等待状态时，渲染预定义图片 -->
+            <ul class="shop_list" v-if="shops.length">
+            <!-- <ul class="shop_list"> -->
+              <li class="shop_li border-1px" @click="$router.push('/shop')" v-for="(item, index) in shops" :key="index">
                 <a>
                   <div class="shop_left">
                     <img class="shop_img" :src="imageBaseURL + item.image_path">
@@ -36,6 +38,12 @@
                     </section>
                   </div>
                 </a>
+              </li>
+            </ul>
+            <!-- 条件渲染的图片 -->
+            <ul v-else>
+              <li v-for="item in 6" :key="item">
+                <img src="./images/shop_back.svg" alt="">
               </li>
             </ul>
           </div>

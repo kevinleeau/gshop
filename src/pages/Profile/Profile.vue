@@ -3,17 +3,18 @@
       <section class="profile">
         <HeaderTop title="My"/>
         <section class="profile-number">
-          <router-link to="/login" class="profile-link">
+          <!-- 对vuex的数据进行判断，从而决定路由去向 -->
+          <router-link :to="userInfo._id ? '/userinfo' : '/login'" class="profile-link">
             <div class="profile_image">
               <i class="iconfont icon-person"></i>
             </div>
             <div class="user-info">
-              <p class="user-info-top">Login | Signup</p>
+              <p class="user-info-top" v-if="!userInfo.phone">{{userInfo.name || 'Login|Signup'}}</p>
               <p>
                 <span class="user-icon">
                   <i class="iconfont icon-shouji icon-mobile"></i>
                 </span>
-                <span class="icon-mobile-number">Mobile</span>
+                <span class="icon-mobile-number">{{userInfo.phone ? userInfo.phone : 'No phone provided'}}</span>
               </p>
             </div>
             <span class="arrow">
@@ -89,15 +90,32 @@
             </div>
           </a>
         </section>
+        <section class="profile_my_order border-1px">
+          <mt-button type="danger" style="width: 100%" v-if="userInfo._id" @click="logout">Logout</mt-button>
+        </section>
       </section>
     </div>
 </template>
 
 <script>
+import { MessageBox, Toast } from 'mint-ui'
+import { mapState } from 'vuex'
 import HeaderTop from '@/components/HeaderTop/HeaderTop.vue'
 export default {
   components: {
     HeaderTop
+  },
+  methods: {
+    logout () {
+      MessageBox.confirm('Are you sure to exit?').then(action => {
+        // note that logout need api request
+        this.$store.dispatch('logout')
+        Toast('Logout successfully')
+      }, action => {})
+    }
+  },
+  computed: {
+    ...mapState(['userInfo'])
   }
 }
 

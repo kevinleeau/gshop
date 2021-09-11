@@ -2,12 +2,15 @@
  <section class="msite">
         <!--首页头部-->
         <header-top :title="address.geohash">
-          <span class="header_search" slot="left">
+          <router-link class="header_search" slot="left" to="/search">
             <i class="iconfont icon-loupe"></i>
-          </span>
-          <span class="header_login" slot="right">
-            <span class="header_login_text">Login | Signup</span>
-          </span>
+          </router-link>
+          <router-link class="header_login" slot="right" :to="userInfo._id ? '/userinfo' : '/login'">
+            <span class="header_login_text" v-if="!userInfo._id">Login|Signup</span>
+            <span class="header_login_text" v-else>
+              <i class="iconfont icon-user"></i>
+            </span>
+          </router-link>
           </header-top>
         <!--首页导航-->
         <nav class="msite_nav">
@@ -62,7 +65,7 @@ export default {
     ShopList
   },
   computed: {
-    ...mapState(['address', 'categories']),
+    ...mapState(['address', 'categories', 'userInfo']),
     categoriesArr () {
       const { categories } = this
       const arr = []
